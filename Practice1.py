@@ -2,15 +2,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
 
+#Reading the File
 f = open('volume.xvg','r')
 lines = f.readlines()
 f.close()
+
 #Extracting Data From the File
 x,y = [],[]
 for line in lines:
     if line[0] != '#' and line[0] != '@':
         x.append(float(line.split()[0]))
         y.append(float(line.split()[1]))
+
 #Executing the RMSF Equation
 total1 = 0   #total1 represents the sum of the volume values
 total2 = 0  #total2 represents the sum of the squared volume values
@@ -20,6 +23,7 @@ for number in y:
 Q = total1 / len(y)   #<Q>
 Q2 = total2 / len(y) #<Q^2>
 RMSF = ((Q2 - (Q**2))**0.5) / Q
+
 #Graphing the Plot
 rc('font', **{
    'family': 'sans-serif',
@@ -35,6 +39,7 @@ plt.xlabel("Time(ps)")
 plt.ylabel("Volume($nm^3$)")
 plt.grid()
 plt.show()
+
 #Printing Out Statistics
 print("Data analysis of the file: volume.xvg")
 print("=====================================")
