@@ -30,7 +30,7 @@ def initialize():
 args = initialize()
 
 # Reading the file
-f = open(args, 'r')
+f = open(args.xvg, 'r')
 lines = f.readlines()
 f.close()
 
