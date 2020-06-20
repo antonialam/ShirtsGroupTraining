@@ -54,12 +54,12 @@ rc('font', **{
 rc('mathtext', **{'default': 'regular'})
 plt.rc('font', family='serif')
 
-plt.plot(x, y, linewidth=0.75)
+plt.plot(x, y, linewidth=0.5)
 plt.title(args)
 plt.xlabel(args)
 plt.ylabel(args)
 plt.grid()
-plt.savefig('Simulation_Analysis.png', dpi=600)
+# plt.savefig('Simulation_Analysis.png', dpi=600)
 # plt.show()
 
 # Important values
