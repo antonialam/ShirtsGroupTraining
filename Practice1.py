@@ -2,6 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
 
+# Some general comments:
+# 1. Consider using argparse to make the code more flexible
+# 2. Consider using autopep8 to ensure the best readability (PEP8 coding style)
+# 3. Consider making the RMSF calculation a function and adding docstrings
+# 4. Use if __name__ == '__main__' 
+# 5. Make your code able to read in multiple .xvg files and generate multiple 
+# plots at one 
+# 6. Use numpy methods like np.mean() instead in your RMSF calculation (You 
+# might also need np.power and np.sqrt)
+# 7. Consider using f string instead of .format()
+
 #Reading the File
 f = open('volume.xvg','r')
 lines = f.readlines()
@@ -39,10 +50,12 @@ plt.xlabel("Time(ps)")
 plt.ylabel("Volume($nm^3$)")
 plt.grid()
 plt.show()
+# Consider using plt.savefig to automatically save the figure here
 
 #Printing Out Statistics
-print("Data analysis of the file: volume.xvg")
-print("=====================================")
+result_str = "Data analysis of the file: volume.xvg"
+print(result_str)
+print('=' * len(result_str))
 print("Analyzing the file ...")
 print("Plotting and saving figure ...")
 print("The average of volume (nm^3): {0:.3f} (RMSF: {1:.3f}, max: {2:.3f}, min: {3:.3f})".format(Q,RMSF,max(y),min(y)))
