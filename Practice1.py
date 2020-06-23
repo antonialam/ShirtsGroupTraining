@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
 
+<<<<<<< HEAD
 
 # Making the code more flexible
 def initialize():
@@ -31,6 +32,21 @@ args = initialize()
 
 # Reading the file
 f = open(args.xvg, 'r')
+=======
+# Some general comments:
+# 1. Consider using argparse to make the code more flexible
+# 2. Consider using autopep8 to ensure the best readability (PEP8 coding style)
+# 3. Consider making the RMSF calculation a function and adding docstrings
+# 4. Use if __name__ == '__main__' 
+# 5. Make your code able to read in multiple .xvg files and generate multiple 
+# plots at one 
+# 6. Use numpy methods like np.mean() instead in your RMSF calculation (You 
+# might also need np.power and np.sqrt)
+# 7. Consider using f string instead of .format()
+
+#Reading the File
+f = open('volume.xvg','r')
+>>>>>>> ef05c57d575f6275d7a9368c59f8d6473edeaf55
 lines = f.readlines()
 f.close()
 
@@ -59,6 +75,7 @@ plt.title(args)
 plt.xlabel(args)
 plt.ylabel(args)
 plt.grid()
+<<<<<<< HEAD
 # plt.savefig('Simulation_Analysis.png', dpi=600)
 # plt.show()
 
@@ -75,6 +92,15 @@ value_closest_to_Q = round(min(y, key=lambda x: abs(x-Q)), 6)
 # Printing out statistics
 print("Data analysis of the file: volume.xvg")
 print("=====================================")
+=======
+plt.show()
+# Consider using plt.savefig to automatically save the figure here
+
+#Printing Out Statistics
+result_str = "Data analysis of the file: volume.xvg"
+print(result_str)
+print('=' * len(result_str))
+>>>>>>> ef05c57d575f6275d7a9368c59f8d6473edeaf55
 print("Analyzing the file ...")
 print("Plotting and saving figure ...")
 print(f"The average of volume (nm^3): {average_volume} (RMSF: {RMSF_rounded}, max: {max_volume}, min: {min_volume})")
