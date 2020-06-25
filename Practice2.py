@@ -18,9 +18,6 @@ def initialize():
                         help='The number of dependent variables. This flag allows \n'
                              'for different columns to be plotted along the \n'
                              'y_axis.')
-    parser.add_argument('-z',
-                        '--size',
-                        help='This specifies the dimensions of the plot.')
     parser.add_argument('-t',
                         '--title',
                         help='The title of the plot.')
@@ -106,4 +103,3 @@ if __name__ == "__main__":
         print(f'The average of volume (nm^3):{average_volume: .3f} (RMSF:{RMSF_rounded: .3f}, max:{max_volume: .3f}, min:{min_volume: .3f})')
         print(f'The maximum occurs at{time_of_max_volume: .4f} ns while the minimum occurs at{time_of_min_volume: .4f} ns.')
         print(f'The configuration at{time_of_value_closest_to_Q: .3f} ns has the volume{value_closest_to_Q: .6f} nm^3 that is closest to the average volume.')
-        
