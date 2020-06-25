@@ -1,3 +1,4 @@
-Practice 1 of Shirts Group Training
+Practice 1 / Practice 2 of Shirts Group Training
 ## Description
-In the following code, the root mean squared fluctuation (RMSF) of the volume of a simulation box was calculated. The graph indicates the volume as a function of time.
+The following code accepts any .xvg file and calculates the root mean squared fluctuation (RMSF) of the volmume within a simulation box. The user can customize the graph as needed, specifying the titles and the dependent variables. 
+
