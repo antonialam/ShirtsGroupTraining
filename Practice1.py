@@ -31,7 +31,6 @@ args = initialize()
 
 # Reading the file
 f = open(args.xvg, 'r')
-=======
 # Some general comments:
 # 1. Consider using argparse to make the code more flexible
 # 2. Consider using autopep8 to ensure the best readability (PEP8 coding style)
