@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
 
-<<<<<<< HEAD
 
 # Making the code more flexible
 def initialize():
@@ -46,7 +45,6 @@ f = open(args.xvg, 'r')
 
 #Reading the File
 f = open('volume.xvg','r')
->>>>>>> ef05c57d575f6275d7a9368c59f8d6473edeaf55
 lines = f.readlines()
 f.close()
 
@@ -75,7 +73,6 @@ plt.title(args)
 plt.xlabel(args)
 plt.ylabel(args)
 plt.grid()
-<<<<<<< HEAD
 # plt.savefig('Simulation_Analysis.png', dpi=600)
 # plt.show()
 
@@ -100,7 +97,6 @@ plt.show()
 result_str = "Data analysis of the file: volume.xvg"
 print(result_str)
 print('=' * len(result_str))
->>>>>>> ef05c57d575f6275d7a9368c59f8d6473edeaf55
 print("Analyzing the file ...")
 print("Plotting and saving figure ...")
 print(f"The average of volume (nm^3): {average_volume} (RMSF: {RMSF_rounded}, max: {max_volume}, min: {min_volume})")
