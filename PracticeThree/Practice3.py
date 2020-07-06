@@ -73,7 +73,7 @@ x = ([[0.280658, 0.5280338, 0],
 # Graphing the time elapsed calculating energy as a function of the number of particles
 x = []
 y = []
-for num in range(2, 501):
+for num in range(2, 101):
     random_coordinates = initialize_particles(num, 5)
     t1 = time.time()
     total_energy = calc_sys_potential(num, random_coordinates, 5)
