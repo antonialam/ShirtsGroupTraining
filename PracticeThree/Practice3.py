@@ -49,7 +49,7 @@ def lennard_jones(coord_a, coord_b, box_length, epsilon=1, sigma=1):
 # print(lennard_jones([1, 2, 5], [1, 2, 100], 7.0))
 
 
-def calc_sys_potential(particles,coordinates, box_length):
+def calc_sys_potential(particles, coordinates, box_length):
     """
        Parameters:
            particles (int): The number of particles in the simulation box.
