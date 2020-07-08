@@ -3,6 +3,7 @@ from itertools import combinations
 import numpy as np
 from matplotlib import rc
 import matplotlib.pyplot as plt
+import statistics
 
 
 def initialize_particles(particles, box_length):
@@ -62,25 +63,27 @@ def calc_sys_potential(particles, coordinates, box_length):
     for i in combinations(list(range(1, particles + 1)), 2):
         total += lennard_jones(coordinates[i[0] - 1], coordinates[i[1] - 1], box_length)
     return total
-x = ([[0.280658, 0.5280338, 0],
-      [0.89481114, 0.75999593, 0],
-      [0.80558062, 0.52409808, 0],
-      [0.07831073, 0.74807289, 0],
-      [0.07833195, 0.08513294, 0]])
-# print(calc_sys_potential(5,x,1))
+
+
+sample = ([[0.280658, 0.5280338, 0],
+           [0.89481114, 0.75999593, 0],
+           [0.80558062, 0.52409808, 0],
+           [0.07831073, 0.74807289, 0],
+           [0.07833195, 0.08513294, 0]])
+# print(calc_sys_potential(5,sample,1))
 
 
 # Graphing the time elapsed calculating energy as a function of the number of particles
-x = []
-y = []
+particle_num = []
+time_y = []
 for num in range(2, 101):
     random_coordinates = initialize_particles(num, 5)
     t1 = time.time()
     total_energy = calc_sys_potential(num, random_coordinates, 5)
     t2 = time. time()
     elapsed_time = t2 - t1
-    x.append(num)
-    y.append(elapsed_time)
+    particle_num.append(num)
+    time_y.append(elapsed_time)
 
 rc('font', **{
     'family': 'sans-serif',
@@ -93,7 +96,7 @@ plt.title("Time Elapsed Calculating Energy as a Function of the Number of Partic
 plt.xlabel("Number of Particles")
 plt.ylabel("Time Elapsed Calculating Energy (sec)")
 plt.grid()
-plt.plot(x, y, linewidth=0.8)
+plt.plot(particle_num, time_y, linewidth=0.8)
 plt.show()
 
 
@@ -112,8 +115,25 @@ rc('mathtext', **{'default': 'regular'})
 plt.rc('font', family='serif')
 
 plt.title("Distribution of Total Energy")
-plt.xlabel("Total Energy")
+plt.xlabel("Total Energy (J)")
 plt.ylabel("Number of Trials")
 plt.grid()
 plt.hist(y, bins=1000)
 plt.show()
+
+# Important variables
+average = np.mean(y)
+med = (y[499] + y[500]) / 2
+max = max(y)
+min = min(y)
+std = statistics.stdev(y)
+
+# Print statistics
+result_str = "Data analysis of the file"
+print(result_str)
+print("=" * len(result_str))
+print("Analyzing the file ...")
+print("Plotting and saving figure ...")
+print(f"Average: {average:.3e} J\nMedian: {med:.3e} J")
+print(f"Max: {max:.3e} J    Min: {min:.3e} J")
+print(f"Std Dev: {std:.3e} J")
