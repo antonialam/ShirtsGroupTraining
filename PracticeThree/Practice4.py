@@ -27,6 +27,23 @@ def initialize():
     args_parse = parser.parse_args()
     return args_parse
 
+class Initialization:
+    def __init__(self, params_file): 
+        with open(params_file) as file:
+            params = yaml.load(file, Loader=yaml.FullLoader) 
+            self.N_particles = params['num_particles']
+            self.rho = params['density']
+            self.N_steps = params['num_steps']
+            self.d_max = params['d_max']
+            self.epsilon = params['epsilon']
+            self.sigma = params['sigma']
+            self.dim = params['dim']
+
+            self.box_length = (self.N_particles / self.rho) ** (1 / self.dim)
+
+    def initialize_coordinates(self):
+        return (np.random.rand(self.N_particles, self.dim) - 0.5) * self.box_length
+
 
 def initialize_particles(particles, box_length):
     """
