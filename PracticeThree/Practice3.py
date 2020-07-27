@@ -3,7 +3,7 @@ from itertools import combinations
 import numpy as np
 from matplotlib import rc
 import matplotlib.pyplot as plt
-import statistics
+import yaml
 
 
 def initialize_particles(particles, box_length):
@@ -14,7 +14,7 @@ def initialize_particles(particles, box_length):
     Returns:
         The random 3-dimensional coordinates of each particle.
     """
-    return np.random.uniform(low=-box_length/2, high=box_length/2, size=(particles, 3))
+    return (np.random.rand(particles, 3) - 0.5) * box_length
 
 
 def calc_distance(coord_a, coord_b, box_length):
@@ -47,7 +47,7 @@ def lennard_jones(coord_a, coord_b, box_length, epsilon=1, sigma=1):
     return potential
 
 
-def calc_sys_potential(particles, coordinates, box_length):
+def calc_sys_potential(particles, coordinates, box_length, sigma=1, epsilon=1):
     """
        Parameters:
            particles (int): The number of particles in the simulation box.
@@ -58,20 +58,27 @@ def calc_sys_potential(particles, coordinates, box_length):
        """
     total = 0
     for i in combinations(list(range(1, particles + 1)), 2):
-        total += lennard_jones(coordinates[i[0] - 1], coordinates[i[1] - 1], box_length)
+        total += lennard_jones(coordinates[i[0] - 1], coordinates[i[1] - 1], box_length, sigma, epsilon)
     return total
 
 
-if __name__ == '__main__':
-    sample = np.random.rand(5, 3)
+
+if __name__ == "__main__":
+
+    print('Reading in simulation parameters')
+    with open('MC_parameters.yml') as ymlfile:
+        params = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
     # Graphing the time elapsed calculating energy as a function of the number of particles
     particle_num = []
     time_y = []
-    for num in range(2, 101):
-        random_coordinates = initialize_particles(num, 5)
+
+    box_length = (params['num_particles'] / params['density']) ** (1 / params['dim'])
+
+    for num in range(2, params['num_particles'] + 1):
+        random_coordinates = initialize_particles(num, box_length)
         t1 = time.time()
-        total_energy = calc_sys_potential(num, random_coordinates, 5)
+        total_energy = calc_sys_potential(num, random_coordinates, box_length, sigma=params['sigma'], epsilon=params['epsilon'])
         t2 = time. time()
         elapsed_time = t2 - t1
         particle_num.append(num)
@@ -111,7 +118,7 @@ if __name__ == '__main__':
     med = (y[499] + y[500]) / 2
     max = max(y)
     min = min(y)
-    std = statistics.stdev(y)
+    std = np.std(y)
 
     # Print statistics
     result_str = "Data analysis of the file"
@@ -122,3 +129,4 @@ if __name__ == '__main__':
     print(f"Average: {average:.3e} J\nMedian: {med:.3e} J")
     print(f"Max: {max:.3e} J    Min: {min:.3e} J")
     print(f"Std Dev: {std:.3e} J")
+
