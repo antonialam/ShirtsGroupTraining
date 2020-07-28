@@ -3,7 +3,7 @@ import numpy as np
 import math
 import yaml
 from tqdm.auto import tqdm
-from scipy.constants import k
+#from scipy.constants import k
 from matplotlib import rc
 import matplotlib.pyplot as plt
 
@@ -45,13 +45,15 @@ def truncated_lennard_jones(coord_a, coord_b, box_length, particles, epsilon=1, 
     """
     distance = calc_distance(coord_a, coord_b, box_length)
     rc = 2.5 * sigma
+    rc -= box_length * np.round(rc / box_length)
     potential = 4 * epsilon * (((sigma/distance)**12) - ((sigma/distance)**6))
     rc_potential = 4 * epsilon * (((sigma/rc)**12) - ((sigma/rc)**6))
     if distance <= rc:
         truncated_potential = potential - rc_potential
     else:
         truncated_potential = 0
-    tail = ((8 * math.pi * (particles**2)) / (3 * potential) * epsilon * sigma**3) * ((((sigma/rc)**9) - ((sigma/rc)**3)) / 3)
+    volume = box_length ** 3
+    tail = ((8 * math.pi * (particles**2)) / (3 * volume) * epsilon * sigma**3) * ((((sigma/rc)**9) - ((sigma/rc)**3)) / 3)
     total_potential = truncated_potential + tail
     return total_potential
 
@@ -94,6 +96,7 @@ for step in tqdm(range(1, params['num_steps'] + 1)):
     new_position[random_particle, :] = new_coordinate
     new_energy = calc_sys_potential(params['num_particles'], new_position, box_length)
     energy_diff = new_energy - initial_energy
+    k = 1
     prob_acc = np.exp(-(1 / (k * params['temp'])) * energy_diff)
     prob_acc_list.append(prob_acc)
     if energy_diff < 0:
