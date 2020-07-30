@@ -62,6 +62,7 @@ def calc_sys_potential(particles, coordinates, box_length, sigma=1, epsilon=1):
     return total
 
 
+
 if __name__ == "__main__":
 
     print('Reading in simulation parameters')
@@ -128,3 +129,4 @@ if __name__ == "__main__":
     print(f"Average: {average:.3e} J\nMedian: {med:.3e} J")
     print(f"Max: {max:.3e} J    Min: {min:.3e} J")
     print(f"Std Dev: {std:.3e} J")
+
