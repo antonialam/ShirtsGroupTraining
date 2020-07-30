@@ -86,63 +86,65 @@ if __name__ == "__main__":
     print("Reading in simulation parameters")
     with open('Practice4Parameters.yml') as ymlfile:
         params = yaml.load(ymlfile, Loader=yaml.FullLoader)
+    box_length = (params['num_particles'] / params['density']) ** (1 / params['dim'])
+    initial_position = initialize_particles(params['num_particles'], box_length)
+    initial_energy = calc_sys_potential(params['num_particles'], initial_position, box_length)
+    new_position = initial_position.copy()
+    steps = []
+    energy = []
+    n_trials = 0
+    n_accept = 0
+    sum = 0
+    new_sum = 0
 
+    for step in tqdm(range(1, params['num_steps'] + 1)):
+        steps.append(step)
+        energy.append(initial_energy)
+        n_trials += 1
+        rand_particle = np.random.randint(0, params['num_particles'])
+        new_coordinate = initial_position[rand_particle] + ((np.random.rand(1, 3) - 0.5) * 2 * params['d_max'])
+        new_position[rand_particle, :] = new_coordinate
+        
+        for pair in initial_position:
+            if (pair != initial_position[rand_particle]).all():
+                energy1 = lennard_jones(pair, initial_position[rand_particle], box_length)
+                energy2 = lennard_jones(pair, new_coordinate, box_length)
+                sum += energy1
+                new_sum += energy2
+        particle_energy = sum
+        new_particle_energy = new_sum
+        energy_diff = new_particle_energy - particle_energy
+        prob_acc = np.exp(-(1 / params['reduced_temp']) * energy_diff)
 
-box_length = (params['num_particles'] / params['density']) ** (1 / params['dim'])
-initial_position = initialize_particles(params['num_particles'], box_length)
-initial_energy = calc_sys_potential(params['num_particles'], initial_position, box_length)
-new_position = initial_position.copy()
-steps = []
-energy = []
-n_trials = 0
-n_accept = 0
-sum = 0
-new_sum = 0
-
-for step in tqdm(range(1, params['num_steps'] + 1)):
-    steps.append(step)
-    energy.append(initial_energy)
-    n_trials += 1
-    rand_particle = np.random.randint(0, params['num_particles'])
-    new_coordinate = initial_position[rand_particle] + ((np.random.rand(1, 3) - 0.5) * 2 * params['d_max'])
-    new_position[rand_particle, :] = new_coordinate
-    for pair in initial_position:
-        energy1 = lennard_jones(pair, initial_position[rand_particle], box_length)
-        energy2 = lennard_jones(pair, new_coordinate, box_length)
-        sum += energy1
-        new_sum += energy2
-    particle_energy = sum
-    new_particle_energy = new_sum
-    energy_diff = new_particle_energy - particle_energy
-    prob_acc = np.exp(-(1 / params['reduced_temp']) * energy_diff)
-    if energy_diff < 0:
-        initial_position = new_position
-        initial_energy += energy_diff
-        n_accept += 1
-    else:
-        if np.random.rand() <= prob_acc:
+        if energy_diff < 0:
             initial_position = new_position
             initial_energy += energy_diff
             n_accept += 1
+        else:
+            if np.random.rand() <= prob_acc:
+                initial_position = new_position
+                initial_energy += energy_diff
+                n_accept += 1
 
-    if step % 1000 == 0:
-        acc_rate = n_accept / n_trials
-        if acc_rate < 0.48:
-            params['d_max'] *= 0.8
-        elif acc_rate > 0.52:
-            params['d_max'] *= 1.2
+        if step % 1000 == 0:
+            acc_rate = n_accept / n_trials
+            if acc_rate < 0.48:
+                params['d_max'] *= 0.8
+            elif acc_rate > 0.52:
+                params['d_max'] *= 1.2
 
 
-rc('font', **{
-    'family': 'sans-serif',
-    'sans-serif': ['DejaVu Sans'],
-    'size': 10})
-rc('mathtext', **{'default': 'regular'})
-plt.rc('font', family='serif')
+    rc('font', **{
+        'family': 'sans-serif',
+        'sans-serif': ['DejaVu Sans'],
+        'size': 10})
+    rc('mathtext', **{'default': 'regular'})
+    plt.rc('font', family='serif')
 
-plt.title("Total Potential Energy as a Function of the Number of Monte Carlo steps")
-plt.xlabel("Number of Monte Carlo Steps")
-plt.ylabel("Total Potential Energy")
-plt.grid()
-plt.plot(steps, energy)
-plt.show()
+    plt.title("Total Potential Energy as a Function of the Number of Monte Carlo steps")
+    plt.xlabel("Number of Monte Carlo Steps")
+    plt.ylabel("Total Potential Energy")
+    plt.grid()
+    plt.plot(steps, energy)
+    plt.show()
+    plt.savefig("result.png", dpi=600)
