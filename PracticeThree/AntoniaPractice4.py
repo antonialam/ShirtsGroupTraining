@@ -74,12 +74,14 @@ def calc_sys_potential(particles, coordinates, box_length):
         total += lennard_jones(coordinates[i[0] - 1], coordinates[i[1] - 1], box_length, particles)
     return total
 
-def tail(particles, epsilon=1, sigma=1):
+
+def tail(particles, box_length, epsilon=1, sigma=1):
     rc = 2.5 * sigma
     rc9 = (sigma / rc) ** 9
     rc3 = (sigma / rc) ** 3
     tail = ((8 * math.pi * (particles ** 2) * epsilon * (sigma ** 3)) / (3 * (box_length ** 3))) * ((rc9 / 3) - rc3)
     return tail
+
 
 if __name__ == "__main__":
 
@@ -87,6 +89,7 @@ if __name__ == "__main__":
     with open('Practice4Parameters.yml') as ymlfile:
         params = yaml.load(ymlfile, Loader=yaml.FullLoader)
     box_length = (params['num_particles'] / params['density']) ** (1 / params['dim'])
+    tail_correction = tail(params['num_particles'], box_length)
     initial_position = initialize_particles(params['num_particles'], box_length)
     new_position = initial_position.copy()
     initial_energy = calc_sys_potential(params['num_particles'], initial_position, box_length)
@@ -98,14 +101,15 @@ if __name__ == "__main__":
     sum = 0
     new_sum = 0
 
+
     for step in tqdm(range(1, params['num_steps'] + 1)):
         steps.append(step)
         energy.append(initial_energy)
         n_trials += 1
         rand_particle = np.random.randint(0, params['num_particles'])
         new_coordinate = initial_position[rand_particle] + ((np.random.rand(1, 3) - 0.5) * 2 * params['d_max'])
-        new_position[rand_particle, :] = new_coordinate
-        
+        new_position[rand_particle] = new_coordinate
+
         for position in initial_position:
             if (position != initial_position[rand_particle]).all():
                 energy1 = lennard_jones(position, initial_position[rand_particle], box_length)
@@ -115,19 +119,18 @@ if __name__ == "__main__":
         particle_energy = sum
         new_particle_energy = new_sum
         energy_diff = new_particle_energy - particle_energy
-        print(step, "1:", particle_energy)
-        print(step, "2:", new_particle_energy)
+        #print(step, "1:", particle_energy)
+        #print(step, "2:", new_particle_energy)
         print(step, "3:", energy_diff)
-
         prob_acc = np.exp(-(1 / params['reduced_temp']) * energy_diff)
 
         if energy_diff < 0:
-            initial_position = new_position
+            initial_position[rand_particle] = new_coordinate
             initial_energy += energy_diff
             n_accept += 1
         else:
             if np.random.rand() <= prob_acc:
-                initial_position = new_position
+                initial_position[rand_particle] = new_coordinate
                 initial_energy += energy_diff
                 n_accept += 1
 
@@ -137,7 +140,6 @@ if __name__ == "__main__":
                 params['d_max'] *= 0.8
             elif acc_rate > 0.52:
                 params['d_max'] *= 1.2
-
 
     rc('font', **{
         'family': 'sans-serif',
