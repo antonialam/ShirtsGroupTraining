@@ -88,8 +88,9 @@ if __name__ == "__main__":
         params = yaml.load(ymlfile, Loader=yaml.FullLoader)
     box_length = (params['num_particles'] / params['density']) ** (1 / params['dim'])
     initial_position = initialize_particles(params['num_particles'], box_length)
-    initial_energy = calc_sys_potential(params['num_particles'], initial_position, box_length)
     new_position = initial_position.copy()
+    initial_energy = calc_sys_potential(params['num_particles'], initial_position, box_length)
+
     steps = []
     energy = []
     n_trials = 0
@@ -105,15 +106,19 @@ if __name__ == "__main__":
         new_coordinate = initial_position[rand_particle] + ((np.random.rand(1, 3) - 0.5) * 2 * params['d_max'])
         new_position[rand_particle, :] = new_coordinate
         
-        for pair in initial_position:
-            if (pair != initial_position[rand_particle]).all():
-                energy1 = lennard_jones(pair, initial_position[rand_particle], box_length)
-                energy2 = lennard_jones(pair, new_coordinate, box_length)
+        for position in initial_position:
+            if (position != initial_position[rand_particle]).all():
+                energy1 = lennard_jones(position, initial_position[rand_particle], box_length)
+                energy2 = lennard_jones(position, new_coordinate, box_length)
                 sum += energy1
                 new_sum += energy2
         particle_energy = sum
         new_particle_energy = new_sum
         energy_diff = new_particle_energy - particle_energy
+        print(step, "1:", particle_energy)
+        print(step, "2:", new_particle_energy)
+        print(step, "3:", energy_diff)
+
         prob_acc = np.exp(-(1 / params['reduced_temp']) * energy_diff)
 
         if energy_diff < 0:
