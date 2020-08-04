@@ -45,19 +45,22 @@ def lennard_jones(coord_a, coord_b, box_length, epsilon=1, sigma=1):
     distance = calc_distance(coord_a, coord_b, box_length)
     rc = 2.5 * sigma
     rc_distance = rc - box_length * np.round(rc / box_length)
+    r12 = (sigma / distance) ** 12
+    r6 = (sigma / distance) ** 6
+    potential = 4 * epsilon * (r12 - r6)
     if (params['truncate'] == 'yes' and distance <= rc) or (params['truncate'] == 'no'):
-        r12 = (sigma / distance) ** 12
-        r6 = (sigma / distance) ** 6
-        potential = 4 * epsilon * (r12 - r6)
+        final_potential = potential
+        # print("yes")
 
         if params['shift'] == 'yes':
             rc12 = (sigma / rc_distance) ** 12
             rc6 = (sigma / rc_distance) ** 6
             rc_potential = 4 * epsilon * (rc12 - rc6)
-            potential -= rc_potential
+            final_potential = potential - rc_potential
+            # print("No")
     else:
-        potential = 0
-    return potential
+        final_potential = 0
+    return final_potential
 
 
 def calc_sys_potential(particles, coordinates, box_length):
@@ -88,11 +91,11 @@ if __name__ == "__main__":
     print("Reading in simulation parameters")
     with open('Practice4Parameters.yml') as ymlfile:
         params = yaml.load(ymlfile, Loader=yaml.FullLoader)
-    box_length = (params['num_particles'] / params['density']) ** (1 / params['dim'])
-    tail_correction = tail(params['num_particles'], box_length)
-    initial_position = initialize_particles(params['num_particles'], box_length)
+    box_len = (params['num_particles'] / params['density']) ** (1 / params['dim'])
+    tail_correction = tail(params['num_particles'], box_len)
+    initial_position = initialize_particles(params['num_particles'], box_len)
     new_position = initial_position.copy()
-    initial_energy = calc_sys_potential(params['num_particles'], initial_position, box_length)
+    initial_energy = calc_sys_potential(params['num_particles'], initial_position, box_len)
 
     steps = []
     energy = []
@@ -112,25 +115,28 @@ if __name__ == "__main__":
 
         for position in initial_position:
             if (position != initial_position[rand_particle]).all():
-                energy1 = lennard_jones(position, initial_position[rand_particle], box_length)
-                energy2 = lennard_jones(position, new_coordinate, box_length)
+                energy1 = lennard_jones(position, initial_position[rand_particle], box_len)
+                energy2 = lennard_jones(position, new_coordinate, box_len)
+                # print(step, "1:", energy1)
+                # print(step, "2:", energy2)
+                # print(step, "3:", initial_position[rand_particle])
+                # print(step, "4", new_coordinate)
                 sum += energy1
                 new_sum += energy2
         particle_energy = sum
         new_particle_energy = new_sum
         energy_diff = new_particle_energy - particle_energy
-        #print(step, "1:", particle_energy)
-        #print(step, "2:", new_particle_energy)
-        print(step, "3:", energy_diff)
+        # print(step, "Energy Difference:", energy_diff)
         prob_acc = np.exp(-(1 / params['reduced_temp']) * energy_diff)
+        print(step, initial_energy)
 
         if energy_diff < 0:
-            initial_position[rand_particle] = new_coordinate
+            initial_position[rand_particle, :] = new_coordinate
             initial_energy += energy_diff
             n_accept += 1
         else:
             if np.random.rand() <= prob_acc:
-                initial_position[rand_particle] = new_coordinate
+                initial_position[rand_particle, :] = new_coordinate
                 initial_energy += energy_diff
                 n_accept += 1
 
@@ -148,6 +154,7 @@ if __name__ == "__main__":
     rc('mathtext', **{'default': 'regular'})
     plt.rc('font', family='serif')
 
+    print(n_accept)
     plt.title("Total Potential Energy as a Function of the Number of Monte Carlo steps")
     plt.xlabel("Number of Monte Carlo Steps")
     plt.ylabel("Total Potential Energy")
